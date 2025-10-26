@@ -47,7 +47,7 @@ extension BluetoothService: CBCentralManagerDelegate {
 	func centralManagerDidUpdateState(_ central: CBCentralManager) {
 		switch central.state {
 		case .poweredOn:
-			print("Bluetooth включен")
+			debugPrint("Bluetooth включен")
 		case .poweredOff:
 			errorMessage = "Bluetooth выключен"
 		case .unauthorized:

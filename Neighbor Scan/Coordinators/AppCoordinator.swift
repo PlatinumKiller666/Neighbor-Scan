@@ -9,7 +9,8 @@
 import Foundation
 import SwiftUI
 
-class AppCoordinator: ObservableObject {
+@MainActor
+final class AppCoordinator: ObservableObject {
 	private let scannerViewModel: ScannerViewModel
 	private let historyViewModel: HistoryViewModel
 	
@@ -17,6 +18,8 @@ class AppCoordinator: ObservableObject {
 		self.scannerViewModel = ScannerViewModel()
 		self.historyViewModel = HistoryViewModel()
 	}
+	
+	// MARK: - Root Views
 	
 	func makeMainView() -> MainView {
 		return MainView(coordinator: self)
@@ -29,6 +32,8 @@ class AppCoordinator: ObservableObject {
 	func makeHistoryView() -> HistoryView {
 		return HistoryView(coordinator: self)
 	}
+	
+	// MARK: - View Models
 	
 	func getScannerViewModel() -> ScannerViewModel {
 		return scannerViewModel

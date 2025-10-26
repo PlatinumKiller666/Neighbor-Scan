@@ -46,6 +46,7 @@ struct CurrentScanHeaderView: View {
 				Text("Найдено устройств: \(deviceCount)")
 					.font(.subheadline)
 					.fontWeight(.medium)
+					.foregroundColor(.primary)
 				
 				HStack(spacing: 6) {
 					Image(systemName: sortOrder.iconName)
@@ -54,7 +55,7 @@ struct CurrentScanHeaderView: View {
 					
 					Text("Сортировка: \(sortOrder.displayName)")
 						.font(.caption)
-						.foregroundColor(.secondary)
+						.foregroundColor(.primary)
 				}
 			}
 			
@@ -62,7 +63,7 @@ struct CurrentScanHeaderView: View {
 		}
 //		.padding(.vertical, 8)
 		.padding(.horizontal, 4)
-		.background(Color.black)
+//		.background(Color.black)
 	}
 }
 

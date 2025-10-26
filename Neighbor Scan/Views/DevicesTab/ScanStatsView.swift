@@ -17,7 +17,8 @@ struct ScanStatsView: View {
 			VStack(spacing: 4) {
 				Text("Статистика сканирования")
 					.font(.caption)
-					.foregroundColor(.secondary)
+					.foregroundColor(.white)
+					.foregroundColor(.primary)
 				
 				HStack(spacing: 16) {
 					if filter == .all || filter == .bluetooth {
@@ -34,6 +35,7 @@ struct ScanStatsView: View {
 				}
 			}
 			.padding(8)
+			.allowsHitTesting(false)
 		}
 		.background(Color.black)
 		.cornerRadius(8)

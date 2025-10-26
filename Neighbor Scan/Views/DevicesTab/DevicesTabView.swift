@@ -25,70 +25,9 @@ struct DevicesTabView: View {
 		NavigationView {
 			VStack(spacing: 0) {
 				ZStack{
-					//				List{
-					//				Picker("Тип устройств", selection: $selectedDeviceTypeSegment) {
-					//					Text("Все").tag(0)
-					//					Text("Bluetooth").tag(1)
-					//					Text("LAN").tag(2)
-					//				}
-					//				.pickerStyle(SegmentedPickerStyle())
-					//				.padding(.horizontal)
-					//				.padding(.top, 8)
-					
-					VStack(spacing: 8) {
-						Picker("Период", selection: $selectedTimePeriodSegment) {
-							Text("24 часа").tag(0)
-							Text("Неделя").tag(1)
-							Text("Выбор даты").tag(2)
-						}
-						.pickerStyle(SegmentedPickerStyle())
-						.padding(.horizontal)
-						
-						if showDatePicker {
-							DateRangePickerView(
-								startDate: $selectedStartDate,
-								endDate: $selectedEndDate
-							)
-							.padding(.horizontal)
-						}
-						
-						CurrentScanDeviceListView(
-							coordinator: coordinator,
-							deviceTypeFilter: deviceTypeFilter,
-							sortOrder: sortOrder
-						)
-						Spacer()
-					}
-					
-//					.padding(.bottom)
-					
-					
-					VStack {
-					
-						if scannerViewModel.isScanning {
-							Spacer()
-							LottieView(animation:  .named("Pulse")).looping()
-								.padding(.bottom, 5)
-							ScanStatsView(viewModel: scannerViewModel, filter: deviceTypeFilter).scaledToFit()
-						}
-						Spacer()
-						
-						ScanControlButton(
-							isScanning: scannerViewModel.isScanning,
-							action: {
-								if scannerViewModel.isScanning {
-									scannerViewModel.stopScanning()
-								} else {
-									scannerViewModel.clearCurrentScanResults()
-									scannerViewModel.startScanning()
-								}
-							}
-						)
-						.padding(.bottom)
-					}
-					.background(Color.clear)
+					pickerView
+					scanView
 				}
-//				}.listStyle(.plain)
 			}
 			.navigationTitle("Сканирование")
 			.navigationBarItems(trailing: sortButton)
@@ -122,6 +61,46 @@ struct DevicesTabView: View {
 			}
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
+	}
+	
+	private var scanView: some View {
+		VStack {
+		
+			if scannerViewModel.isScanning {
+				Group{
+					Spacer()
+					LottieView(animation:  .named("Pulse")).looping()
+						.padding(.bottom, 5)
+					ScanStatsView(viewModel: scannerViewModel, filter: deviceTypeFilter).scaledToFit()
+				}.allowsHitTesting(false)
+			}
+			Spacer()
+			
+			ScanControlButton(
+				isScanning: scannerViewModel.isScanning,
+				action: {
+					if scannerViewModel.isScanning {
+						scannerViewModel.stopScanning()
+					} else {
+						scannerViewModel.clearCurrentScanResults()
+						scannerViewModel.startScanning()
+					}
+				}
+			)
+			.padding(.bottom)
+		}
+		.background(Color.clear)
+	}
+	
+	private var pickerView: some View {
+		VStack(spacing: 8) {
+			CurrentScanDeviceListView(
+				coordinator: coordinator,
+				deviceTypeFilter: deviceTypeFilter,
+				sortOrder: sortOrder
+			)
+			Spacer()
+		}
 	}
 	
 	private var sortButton: some View {

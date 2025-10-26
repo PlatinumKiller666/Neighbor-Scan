@@ -5,33 +5,38 @@
 //  Created by Kirill Zolotarev on 25.10.2025.
 //
 
-
 import SwiftUI
-import RealmSwift
 
 struct HistoryDeviceListView: View {
-	let deviceTypeFilter: DeviceTypeFilter
-	let timePeriodFilter: TimePeriodFilter
+	let sessions: [ScanningSession]
 	let dateRange: ClosedRange<Date>
 	let sortOrder: SortOrder
+	let onDeleteSession: ((ScanningSession) -> Void)?
 	
 	@StateObject private var viewModel = DeviceListViewModel()
 	
 	var body: some View {
 		Group {
 			if viewModel.isLoading {
-				ProgressView("Загрузка истории...")
+				ProgressView("Загрузка устройств...")
 					.padding()
 			} else if viewModel.filteredDevices.isEmpty {
 				EmptyHistoryView(
-					filter: deviceTypeFilter,
 					timePeriod: timePeriodFilter,
 					sortOrder: sortOrder
 				)
 			} else {
 				List {
 					Section {
-						EmptyView()
+						ForEach(viewModel.filteredDevices) { device in
+							NavigationLink(destination: DeviceDetailView(device: device)) {
+								DeviceRow(
+									device: device,
+									showDeviceType: true,
+									sortOrder: sortOrder
+								)
+							}
+						}
 					} header: {
 						HistoryHeaderView(
 							deviceCount: viewModel.filteredDevices.count,
@@ -39,47 +44,58 @@ struct HistoryDeviceListView: View {
 							timePeriod: timePeriodFilter
 						)
 					}
-					
-					ForEach(viewModel.filteredDevices) { device in
-						NavigationLink(destination: DeviceDetailView(device: device)) {
-							DeviceRow(
-								device: device,
-								showDeviceType: deviceTypeFilter == .all,
-								sortOrder: sortOrder
-							)
-						}
-					}
 				}
 				.listStyle(GroupedListStyle())
 			}
 		}
 		.onAppear {
-			viewModel.applyFilters(
-				deviceType: deviceTypeFilter,
+			// Отладочная информация
+			viewModel.debugSessions(sessions)
+			
+			viewModel.applyFiltersWithSessions(
+				sessions: sessions,
 				dateRange: dateRange,
 				sortOrder: sortOrder
 			)
 		}
-		.onChange(of: deviceTypeFilter) { newFilter in
-			viewModel.applyFilters(
-				deviceType: newFilter,
+		.onChange(of: sessions) { newSessions in
+			debugPrint("Сессии изменились, количество: \(newSessions.count)")
+			viewModel.applyFiltersWithSessions(
+				sessions: newSessions,
 				dateRange: dateRange,
 				sortOrder: sortOrder
 			)
 		}
 		.onChange(of: dateRange) { newRange in
-			viewModel.applyFilters(
-				deviceType: deviceTypeFilter,
+			debugPrint("Диапазон дат изменился: \(newRange.lowerBound) - \(newRange.upperBound)")
+			viewModel.applyFiltersWithSessions(
+				sessions: sessions,
 				dateRange: newRange,
 				sortOrder: sortOrder
 			)
 		}
 		.onChange(of: sortOrder) { newOrder in
-			viewModel.applyFilters(
-				deviceType: deviceTypeFilter,
+			debugPrint("Сортировка изменилась: \(newOrder)")
+			viewModel.applyFiltersWithSessions(
+				sessions: sessions,
 				dateRange: dateRange,
 				sortOrder: newOrder
 			)
+		}
+	}
+	
+	private var timePeriodFilter: TimePeriodFilter {
+		// Определяем период на основе dateRange
+		let now = Date()
+		let oneDayAgo = now.addingTimeInterval(-24 * 3600)
+		let oneWeekAgo = now.addingTimeInterval(-7 * 24 * 3600)
+		
+		if dateRange.lowerBound == oneDayAgo && dateRange.upperBound == now {
+			return .last24Hours
+		} else if dateRange.lowerBound == oneWeekAgo && dateRange.upperBound == now {
+			return .lastWeek
+		} else {
+			return .customRange
 		}
 	}
 }

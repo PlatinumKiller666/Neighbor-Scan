@@ -46,7 +46,7 @@ class ScanningSession: Object, ObjectKeyIdentifiable {
 	@Persisted(primaryKey: true) var id: String = UUID().uuidString
 	@Persisted var startTime: Date = Date()
 	@Persisted var endTime: Date?
-	@Persisted var devices: List<Device>
+	@Persisted var devices: RealmSwift.List<Device>
 	
 	var duration: TimeInterval {
 		return (endTime ?? Date()).timeIntervalSince(startTime)

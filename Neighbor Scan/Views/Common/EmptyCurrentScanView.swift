@@ -13,6 +13,7 @@ struct EmptyCurrentScanView: View {
 	
 	var body: some View {
 		VStack(spacing: 20) {
+			Spacer()
 			Image(systemName: iconName)
 				.font(.system(size: 60))
 				.foregroundColor(.gray)
@@ -27,6 +28,7 @@ struct EmptyCurrentScanView: View {
 				.foregroundColor(.secondary)
 				.multilineTextAlignment(.center)
 				.padding(.horizontal, 40)
+			Spacer()
 		}
 		.padding()
 	}
@@ -53,7 +55,6 @@ struct EmptyCurrentScanView: View {
 }
 
 struct EmptyHistoryView: View {
-	let filter: DeviceTypeFilter
 	let timePeriod: TimePeriodFilter
 	let sortOrder: SortOrder
 	
@@ -68,7 +69,7 @@ struct EmptyHistoryView: View {
 				.foregroundColor(.secondary)
 				.multilineTextAlignment(.center)
 			
-			Text("В выбранных фильтрах (\(periodText)) устройства не найдены")
+			Text("В выбранном периоде (\(periodText)) устройства не найдены")
 				.font(.body)
 				.foregroundColor(.secondary)
 				.multilineTextAlignment(.center)

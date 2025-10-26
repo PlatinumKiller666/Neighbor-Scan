@@ -5,13 +5,12 @@
 //  Created by Kirill Zolotarev on 25.10.2025.
 //
 
-
 import Foundation
 import Combine
 import SwiftUI
-import RealmSwift
 
-class ScannerViewModel: ObservableObject {
+@MainActor
+final class ScannerViewModel: ObservableObject {
 	private let bluetoothService = BluetoothService()
 	private let lanScanService = LANScanService()
 	private let realmService = RealmService.shared
@@ -26,18 +25,9 @@ class ScannerViewModel: ObservableObject {
 	@Published var showAlert = false
 	@Published var showCompletionAlert = false
 	@Published var foundDevicesCount = 0
-	var isCanceled = false
 	
 	var allDevices: [Device] {
 		return bluetoothDevices + lanDevices
-	}
-	
-	var bluetoothDevicesCount: Int {
-		return bluetoothDevices.count
-	}
-	
-	var lanDevicesCount: Int {
-		return lanDevices.count
 	}
 	
 	init() {
@@ -46,31 +36,41 @@ class ScannerViewModel: ObservableObject {
 	
 	private func setupBindings() {
 		bluetoothService.$discoveredDevices
+			.receive(on: DispatchQueue.main)
 			.sink { [weak self] devices in
-				self?.bluetoothDevices = devices
-				self?.saveDevicesToRealm(devices)
+				Task { @MainActor in
+					self?.bluetoothDevices = devices
+					await self?.saveDevicesToSession(devices)
+				}
 			}
 			.store(in: &cancellables)
 		
 		lanScanService.$discoveredDevices
+			.receive(on: DispatchQueue.main)
 			.sink { [weak self] devices in
-				self?.lanDevices = devices
-				self?.saveDevicesToRealm(devices)
+				Task { @MainActor in
+					self?.lanDevices = devices
+					await self?.saveDevicesToSession(devices)
+				}
 			}
 			.store(in: &cancellables)
 		
 		bluetoothService.$isScanning
 			.combineLatest(lanScanService.$isScanning)
+			.receive(on: DispatchQueue.main)
 			.map { $0 || $1 }
 			.sink { [weak self] isScanning in
 				self?.isScanning = isScanning
 				if !isScanning && self?.currentSession != nil {
-					self?.completeScanningSession()
+					Task { @MainActor in
+						await self?.completeScanningSession()
+					}
 				}
 			}
 			.store(in: &cancellables)
 		
 		lanScanService.$progress
+			.receive(on: DispatchQueue.main)
 			.assign(to: \.scanProgress, on: self)
 			.store(in: &cancellables)
 		
@@ -79,27 +79,33 @@ class ScannerViewModel: ObservableObject {
 			lanScanService.$errorMessage
 		)
 		.compactMap { $0 }
+		.receive(on: DispatchQueue.main)
 		.sink { [weak self] error in
-			self?.errorMessage = error
-			self?.showAlert = true
+			if !error.isEmpty {
+				self?.errorMessage = error
+				self?.showAlert = true
+			}
 		}
 		.store(in: &cancellables)
 		
 		Publishers.CombineLatest($bluetoothDevices, $lanDevices)
+			.receive(on: DispatchQueue.main)
 			.map { $0.count + $1.count }
 			.assign(to: \.foundDevicesCount, on: self)
 			.store(in: &cancellables)
 	}
 	
 	func startScanning() {
-		isCanceled = false
-		currentSession = realmService.createSession()
-		bluetoothService.startScanning()
-		lanScanService.startScanning()
+		Task { @MainActor in
+			currentSession = realmService.createSession()
+			debugPrint("Создана новая сессия: \(currentSession?.id ?? "unknown")")
+			
+			bluetoothService.startScanning()
+			lanScanService.startScanning()
+		}
 	}
 	
 	func stopScanning() {
-		isCanceled = true
 		bluetoothService.stopScanning()
 		lanScanService.stopScanning()
 	}
@@ -109,87 +115,20 @@ class ScannerViewModel: ObservableObject {
 		lanDevices.removeAll()
 	}
 	
-	/*
-	private func saveDevicesToRealm(_ devices: [Device]) {
-		guard let session = currentSession else { return }
-		
-		realmService.saveDevices(devices)
-		
-		do {
-			let realm = try Realm()
-			try realm.write {
-				devices.forEach { device in
-					if !session.devices.contains(where: { $0.id == device.id }) {
-						session.devices.append(device)
-					}
-				}
-			}
-		} catch {
-			errorMessage = "Ошибка сохранения в базу данных: \(error.localizedDescription)"
+	private func saveDevicesToSession(_ devices: [Device]) async {
+		guard let session = currentSession else {
+			debugPrint("Ошибка: нет активной сессии для сохранения устройств")
+			return
 		}
+		await realmService.saveDevicesToSession(devices, session: session)
 	}
 	
-	private func completeScanningSession() {
+	private func completeScanningSession() async {
 		guard let session = currentSession else { return }
 		realmService.completeSession(session)
+		debugPrint("Сессия завершена: \(session.id), устройств: \(session.devices.count)")
 		currentSession = nil
-		showCompletionAlert = !isCanceled
-	}
-	 */
-	
-	
-	private func saveDevicesToRealm(_ devices: [Device]) {
-		guard let session = currentSession else { return }
-		
-		realmService.saveDevices(devices) { [weak self] error in
-			if let error = error {
-				DispatchQueue.main.async {
-					self?.errorMessage = "Ошибка сохранения в базу данных: \(error.localizedDescription)"
-				}
-				return
-			}
-			
-			// Добавляем устройства в текущую сессию
-			self?.realmService.performInBackground { realm in
-				guard let sessionInBackground = realm.object(ofType: ScanningSession.self, forPrimaryKey: session.id) else {
-					throw RealmError.queryFailed
-				}
-				
-				try realm.write {
-					devices.forEach { device in
-						if !sessionInBackground.devices.contains(where: { $0.id == device.id }) {
-							sessionInBackground.devices.append(device)
-						}
-					}
-				}
-			} completion: { result in
-				switch result {
-				case .success:
-					break
-				case .failure(let error):
-					DispatchQueue.main.async {
-						self?.errorMessage = "Ошибка добавления устройств в сессию: \(error.localizedDescription)"
-					}
-				}
-			}
-		}
-	}
-	
-	private func completeScanningSession() {
-		guard let session = currentSession else { return }
-		
-		realmService.completeSession(session) { [weak self] error in
-			if let error = error {
-				DispatchQueue.main.async {
-					self?.errorMessage = "Ошибка завершения сессии: \(error.localizedDescription)"
-				}
-			} else {
-				DispatchQueue.main.async {
-					self?.currentSession = nil
-					self?.showCompletionAlert = true
-				}
-			}
-		}
+		showCompletionAlert = true
 	}
 	
 	func getDevices(for filter: DeviceTypeFilter) -> [Device] {
@@ -200,3 +139,4 @@ class ScannerViewModel: ObservableObject {
 		}
 	}
 }
+

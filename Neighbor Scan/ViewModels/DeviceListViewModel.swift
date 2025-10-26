@@ -5,132 +5,91 @@
 //  Created by Kirill Zolotarev on 25.10.2025.
 //
 
-/*
- import Foundation
- import RealmSwift
- import Combine
-
- class DeviceListViewModel: ObservableObject {
-	 @Published var filteredDevices: [Device] = []
-	 @Published var isLoading = false
-	 
-	 private let realmService = RealmService.shared
-	 private var notificationToken: NotificationToken?
-	 
-	 init() {
-		 setupRealmObserver()
-	 }
-	 
-	 deinit {
-		 notificationToken?.invalidate()
-	 }
-	 
-	 private func setupRealmObserver() {
-		 guard let allDevices = realmService.getAllDevices() else { return }
-		 
-		 notificationToken = allDevices.observe { [weak self] changes in
-			 switch changes {
-			 case .initial(let results):
-				 self?.filteredDevices = Array(results)
-			 case .update(let results, _, _, _):
-				 self?.filteredDevices = Array(results)
-			 case .error(let error):
-				 print("Ошибка наблюдения за устройствами: \(error)")
-			 }
-		 }
-	 }
-	 
-	 func applyFilters(deviceType: DeviceTypeFilter, dateRange: ClosedRange<Date>, sortOrder: SortOrder) {
-		 isLoading = true
-		 
-		 DispatchQueue.global(qos: .userInitiated).async {
-			 var results: Results<Device>?
-			 
-			 results = self.realmService.getDevices(in: dateRange, sortOrder: sortOrder)
-			 
-			 if deviceType != .all {
-				 let typeFilter: DeviceType = (deviceType == .bluetooth) ? .bluetooth : .lan
-				 results = results?.filter("type == %@", typeFilter.rawValue)
-			 }
-			 
-			 DispatchQueue.main.async {
-				 if let finalResults = results {
-					 self.filteredDevices = Array(finalResults)
-				 }
-				 self.isLoading = false
-			 }
-		 }
-	 }
- }
- */
-
 import Foundation
 import RealmSwift
 import Combine
 
-class DeviceListViewModel: ObservableObject {
+@MainActor
+final class DeviceListViewModel: ObservableObject {
 	@Published var filteredDevices: [Device] = []
 	@Published var isLoading = false
 	@Published var errorMessage: String?
 	
-	private let realmService = RealmService()
+	private let realmService = RealmService.shared
 	private var notificationToken: NotificationToken?
-	private var cancellables = Set<AnyCancellable>()
 	
 	init() {
-		setupRealmObserver()
+		setupLiveUpdates()
 	}
 	
 	deinit {
 		notificationToken?.invalidate()
 	}
 	
-	private func setupRealmObserver() {
-		realmService.getAllDevices { [weak self] results in
-			guard let results = results else { return }
-			
-			self?.notificationToken = results.observe { [weak self] changes in
-				switch changes {
-				case .initial(let devices):
-					self?.filteredDevices = Array(devices)
-				case .update(let devices, _, _, _):
-					self?.filteredDevices = Array(devices)
-				case .error(let error):
-					self?.errorMessage = "Ошибка наблюдения за устройствами: \(error.localizedDescription)"
-				}
-			}
+	private func setupLiveUpdates() {
+		notificationToken = realmService.observeDevices { [weak self] devices in
+			self?.filteredDevices = devices
 		}
 	}
 	
-	func applyFilters(deviceType: DeviceTypeFilter, dateRange: ClosedRange<Date>, sortOrder: SortOrder) {
+	func applyFiltersWithSessions(
+		sessions: [ScanningSession],
+		dateRange: ClosedRange<Date>,
+		sortOrder: SortOrder = .descending
+	) {
 		isLoading = true
 		errorMessage = nil
 		
-		realmService.getDevices(in: dateRange, sortOrder: sortOrder) { [weak self] results in
-			guard let self = self, let results = results else {
-				DispatchQueue.main.async {
-					self?.isLoading = false
-				}
-				return
-			}
-			
-			var filteredResults = results
-			
-			if deviceType != .all {
-				let typeFilter: DeviceType = (deviceType == .bluetoothOnly) ? .bluetooth : .lan
-				filteredResults = filteredResults.filter("type == %@", typeFilter.rawValue)
-			}
-			
-			DispatchQueue.main.async {
-				self.filteredDevices = Array(filteredResults)
-				self.isLoading = false
-			}
+		var allDevices: [Device] = []
+		for session in sessions {
+			let sessionDevices = Array(session.devices)
+			allDevices.append(contentsOf: sessionDevices)
 		}
+		
+		debugPrint("Всего устройств из сессий: \(allDevices.count)")
+		
+		// Фильтрация по дате
+		let filteredDevices = allDevices.filter { device in
+			dateRange.contains(device.timestamp)
+		}
+		
+		debugPrint("Устройств после фильтрации по дате: \(filteredDevices.count)")
+		
+		// Сортировка
+		let sortedDevices = filteredDevices.sorted {
+			sortOrder == .descending ?
+			$0.timestamp > $1.timestamp :
+			$0.timestamp < $1.timestamp
+		}
+		
+		self.filteredDevices = sortedDevices
+		isLoading = false
+		
+		debugPrint("Финальное количество устройств: \(sortedDevices.count)")
 	}
 	
 	func refreshData() {
-		applyFilters(deviceType: .all,
-					dateRange: Date().addingTimeInterval(-7 * 24 * 3600)...Date(),
-					sortOrder: .descending)
+		// Базовая загрузка всех устройств
+		filteredDevices = realmService.getAllDevices()
+	}
+	
+	// Альтернативный метод для отладки
+	func debugSessions(_ sessions: [ScanningSession]) {
+		debugPrint("=== ДЕБАГ СЕССИЙ ===")
+		debugPrint("Количество сессий: \(sessions.count)")
+		
+		for (index, session) in sessions.enumerated() {
+			debugPrint("Сессия \(index + 1):")
+			debugPrint("  - ID: \(session.id)")
+			debugPrint("  - Начало: \(session.startTime)")
+			debugPrint("  - Конец: \(session.endTime?.description ?? "N/A")")
+			debugPrint("  - Количество устройств: \(session.devices.count)")
+			
+			// Выводим информацию об устройствах
+			for device in session.devices {
+				debugPrint("    Устройство: \(device.name ?? "Unnamed") - \(device.type.rawValue) - \(device.timestamp)")
+			}
+		}
+		debugPrint("====================")
 	}
 }

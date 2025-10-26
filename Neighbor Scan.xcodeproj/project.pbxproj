@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0112586C2EAD6463001D1263 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 0112586B2EAD6463001D1263 /* Lottie */; };
-		0112586E2EAD64ED001D1263 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0112586D2EAD64ED001D1263 /* RealmSwift */; };
 		016837DD2EAD00E8003D2FEB /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 016837DC2EAD00E8003D2FEB /* CoreBluetooth.framework */; };
+		5EAC9293AC5DF8E197CE37ED /* Pods_Neighbor_Scan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAAA77D6436E1D5B60928958 /* Pods_Neighbor_Scan.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +27,9 @@
 /* Begin PBXFileReference section */
 		016837A22EACF916003D2FEB /* Neighbor Scan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Neighbor Scan.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		016837DC2EAD00E8003D2FEB /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		88E8BEEA5C19C3AFFDAAD941 /* Pods-Neighbor Scan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Neighbor Scan.debug.xcconfig"; path = "Target Support Files/Pods-Neighbor Scan/Pods-Neighbor Scan.debug.xcconfig"; sourceTree = "<group>"; };
+		DAAA77D6436E1D5B60928958 /* Pods_Neighbor_Scan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Neighbor_Scan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4F1B32E91C9F33051C35642 /* Pods-Neighbor Scan.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Neighbor Scan.release.xcconfig"; path = "Target Support Files/Pods-Neighbor Scan/Pods-Neighbor Scan.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,9 +45,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0112586E2EAD64ED001D1263 /* RealmSwift in Frameworks */,
 				016837DD2EAD00E8003D2FEB /* CoreBluetooth.framework in Frameworks */,
-				0112586C2EAD6463001D1263 /* Lottie in Frameworks */,
+				5EAC9293AC5DF8E197CE37ED /* Pods_Neighbor_Scan.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +59,7 @@
 				016837A42EACF916003D2FEB /* Neighbor Scan */,
 				016837DB2EAD00E8003D2FEB /* Frameworks */,
 				016837A32EACF916003D2FEB /* Products */,
+				404433C3E71B65BDFA5202E7 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,8 +75,18 @@
 			isa = PBXGroup;
 			children = (
 				016837DC2EAD00E8003D2FEB /* CoreBluetooth.framework */,
+				DAAA77D6436E1D5B60928958 /* Pods_Neighbor_Scan.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		404433C3E71B65BDFA5202E7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				88E8BEEA5C19C3AFFDAAD941 /* Pods-Neighbor Scan.debug.xcconfig */,
+				F4F1B32E91C9F33051C35642 /* Pods-Neighbor Scan.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -84,10 +96,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016837AD2EACF91A003D2FEB /* Build configuration list for PBXNativeTarget "Neighbor Scan" */;
 			buildPhases = (
+				E1780137BDD01FD95D81C8B9 /* [CP] Check Pods Manifest.lock */,
 				0168379E2EACF916003D2FEB /* Sources */,
 				0168379F2EACF916003D2FEB /* Frameworks */,
 				016837A02EACF916003D2FEB /* Resources */,
 				016838342EAD3D64003D2FEB /* Embed Frameworks */,
+				9BDD71657AC6910259C9628C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -97,10 +111,6 @@
 				016837A42EACF916003D2FEB /* Neighbor Scan */,
 			);
 			name = "Neighbor Scan";
-			packageProductDependencies = (
-				0112586B2EAD6463001D1263 /* Lottie */,
-				0112586D2EAD64ED001D1263 /* RealmSwift */,
-			);
 			productName = "Neighbor Scan";
 			productReference = 016837A22EACF916003D2FEB /* Neighbor Scan.app */;
 			productType = "com.apple.product-type.application";
@@ -131,9 +141,6 @@
 			mainGroup = 016837992EACF916003D2FEB;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				016837E02EAD0730003D2FEB /* XCRemoteSwiftPackageReference "lottie-spm" */,
-				016837E92EAD1037003D2FEB /* XCRemoteSwiftPackageReference "realm-swift" */,
-				0168382D2EAD2F1E003D2FEB /* XCRemoteSwiftPackageReference "lan-scanner" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 016837A32EACF916003D2FEB /* Products */;
@@ -154,6 +161,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9BDD71657AC6910259C9628C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Neighbor Scan/Pods-Neighbor Scan-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Neighbor Scan/Pods-Neighbor Scan-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Neighbor Scan/Pods-Neighbor Scan-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E1780137BDD01FD95D81C8B9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Neighbor Scan-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0168379E2EACF916003D2FEB /* Sources */ = {
@@ -219,6 +272,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.xib;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -278,6 +334,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.xib;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -291,6 +350,7 @@
 		};
 		016837AE2EACF91A003D2FEB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 88E8BEEA5C19C3AFFDAAD941 /* Pods-Neighbor Scan.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -298,6 +358,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7LEV22X892;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Neighbor-Scan-Info.plist";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется доступ к Bluetooth для сканирования устройств";
@@ -305,8 +366,11 @@
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Приложению требуется доступ к локальной сети для сканирования устройств в LAN";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -322,6 +386,7 @@
 		};
 		016837AF2EACF91A003D2FEB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4F1B32E91C9F33051C35642 /* Pods-Neighbor Scan.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -329,6 +394,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7LEV22X892;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Neighbor-Scan-Info.plist";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется доступ к Bluetooth для сканирования устройств";
@@ -336,8 +402,11 @@
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Приложению требуется доступ к локальной сети для сканирования устройств в LAN";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -373,46 +442,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		016837E02EAD0730003D2FEB /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.2;
-			};
-		};
-		016837E92EAD1037003D2FEB /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-		0168382D2EAD2F1E003D2FEB /* XCRemoteSwiftPackageReference "lan-scanner" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MaatheusGois/lan-scanner";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		0112586B2EAD6463001D1263 /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016837E02EAD0730003D2FEB /* XCRemoteSwiftPackageReference "lottie-spm" */;
-			productName = Lottie;
-		};
-		0112586D2EAD64ED001D1263 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016837E92EAD1037003D2FEB /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0168379A2EACF916003D2FEB /* Project object */;
 }

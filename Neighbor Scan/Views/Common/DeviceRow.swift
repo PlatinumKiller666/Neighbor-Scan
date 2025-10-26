@@ -23,6 +23,8 @@ struct DeviceRow: View {
 						.font(.headline)
 						.lineLimit(1)
 					
+					Spacer()
+					
 					if showDeviceType {
 						DeviceTypeBadge(type: device.type)
 					}

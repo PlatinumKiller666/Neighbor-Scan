@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct Neighbor_ScanApp: App {
+struct NetworkScannerApp: App {
 	@StateObject private var appCoordinator = AppCoordinator()
 	
 	var body: some Scene {
